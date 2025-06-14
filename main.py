@@ -9,7 +9,7 @@ from threading import Thread
 load_dotenv()
 token = os.getenv("TOKEN_BOT_DISCORD")
 
-# ── Flask / keep-alive (utile sur Replit, Render, etc.) ───────────────────────
+# ── Flask / keep‑alive (utile sur Replit, Render, etc.) ───────────────────────
 app = Flask(__name__)
 
 @app.route("/")
@@ -86,9 +86,11 @@ GRADES = {
         "sergent":   "En recherche",
         "agents": [
             "En recherche",
+            
         ],
         "stagiaires": [
             "En recherche",
+            
         ],
     },
 }
@@ -97,10 +99,6 @@ GRADES = {
 @bot.event
 async def on_ready():
     print(f"✅ Le bot est connecté en tant que {bot.user}")
-    # Enregistre les commandes slash pour un serveur spécifique (GUILD_ID)
-    guild = discord.Object(id=GUILD_ID)
-    await bot.tree.sync(guild=guild)
-    print("Commandes slash synchronisées.")
 
 # ─────────────────────── hiérarchie PM ──────────────────────────────────────────────
 @bot.command(name="hiérarchiepm")
@@ -142,6 +140,9 @@ async def hierarchie_pm(ctx):
 
     embed.set_footer(text="Structure hiérarchique officielle de la PM")
     await ctx.send(embed=embed)
+
+
+
 
 # ─────────────────────── COMMANDES ───────────────────────────────────────────
 
@@ -285,12 +286,12 @@ Merci de rester concentré sur la situation en cours (décisions, informations, 
     except discord.Forbidden:
         pass
 
+# Alerte rouge — message global
 @bot.command()
 @commands.has_any_role(*ROLES_OFFICIERS_GEN_IDs)
 async def alerte_rouge_message(ctx):
-    channel = discord.utils.get(ctx.guild.text_channels, name="alerte-rouge")
-    if not channel:
-        await ctx.send("⚠️ Le salon `alerte-rouge` n’existe pas.")
+    if ctx.channel.name != "『🔴』alerte-rouge":
+        await ctx.send("❌ Cette commande doit être utilisée dans le salon `#alerte-rouge`.", delete_after=5)
         return
 
     role = ctx.guild.get_role(ROLE_MILITAIRE_ID)
@@ -308,7 +309,7 @@ async def alerte_rouge_message(ctx):
         color=0xff0000
     )
     embed.set_footer(text="Ordre militaire — Fédération Ruzbèkes")
-    await channel.send(content=role.mention if role else "", embed=embed)
+    await ctx.send(content=role.mention if role else "", embed=embed)
     try:
         await ctx.message.delete()
     except discord.Forbidden:
